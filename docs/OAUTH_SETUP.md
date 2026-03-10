@@ -59,8 +59,9 @@ Step-by-step guide to set up Google OAuth credentials for automated Chrome Web S
    ```
 5. Click **Authorize APIs**
 6. Sign in with your Google account
-7. If you see "Google hasn't verified this app":
-   - Click **Advanced** → **Go to [App Name] (unsafe)**
+7. You may see one of these screens:
+   - **"Google hasn't verified this app"** → Click **Advanced** → **Go to [App Name] (unsafe)**
+   - **"Access blocked"** or **"access_denied"** → You forgot to add yourself as a test user in Step 3. Go back and add your email, then retry.
 8. Click **Allow**
 9. In Step 2, click **Exchange authorization code for tokens**
 10. Copy the **Refresh token**
