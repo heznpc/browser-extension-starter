@@ -1,12 +1,16 @@
-name: CD — Chrome Web Store Deploy
+name: Deploy to Chrome Web Store
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'manifest.json'
-      - 'src/**'
-      - 'assets/**'
+  workflow_dispatch:
+    inputs:
+      publish_target:
+        description: 'Publish target'
+        required: true
+        default: 'default'
+        type: choice
+        options:
+          - default
+          - trustedTesters
 
 jobs:
   deploy:
@@ -19,24 +23,26 @@ jobs:
         run: |
           VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('manifest.json','utf8')).version)")
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Deploying v$VERSION"
 
       - name: Build zip
         run: |
           mkdir -p dist
-          zip -r dist/chrome.zip manifest.json src/ assets/icons/ -x '*.DS_Store'
+          zip -r dist/extension.zip manifest.json src/ assets/icons/ -x '*.DS_Store'
 
       - name: Upload to Chrome Web Store
         uses: mnao305/chrome-extension-upload@v5.0.0
         with:
-          file-path: dist/chrome.zip
+          file-path: dist/extension.zip
           extension-id: ${{ secrets.CWS_EXTENSION_ID }}
           client-id: ${{ secrets.CWS_CLIENT_ID }}
           client-secret: ${{ secrets.CWS_CLIENT_SECRET }}
           refresh-token: ${{ secrets.CWS_REFRESH_TOKEN }}
           publish: true
+          publish-target: ${{ inputs.publish_target }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: chrome-v${{ steps.version.outputs.version }}
-          path: dist/chrome.zip
+          name: extension-v${{ steps.version.outputs.version }}
+          path: dist/extension.zip

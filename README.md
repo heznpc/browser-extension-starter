@@ -2,14 +2,13 @@
 
 # Browser Extension Starter
 
-**Modern Manifest V3 starter with GitHub Actions CI/CD + Chrome Web Store auto-deploy.**
+**Manifest V3 + GitHub Actions CI/CD + Chrome Web Store deploy.**
 
-One click to start. One push to deploy.
+Build your extension. Push to deploy.
 
-[![CI](https://github.com/starter-series/browser-extension-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/starter-series/browser-extension-starter/actions/workflows/ci.yml)
+[![CI](https://github.com/heznpc/browser-extension-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/heznpc/browser-extension-starter/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest_V3-blue.svg)](https://developer.chrome.com/docs/extensions/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/starter-series/browser-extension-starter/pulls)
 
 </div>
 
@@ -19,7 +18,7 @@ One click to start. One push to deploy.
 
 ```bash
 # 1. Click "Use this template" on GitHub (or clone)
-git clone https://github.com/starter-series/browser-extension-starter.git my-extension
+git clone https://github.com/heznpc/browser-extension-starter.git my-extension
 cd my-extension
 
 # 2. Install dependencies
@@ -28,7 +27,7 @@ npm install
 # 3. Load in Chrome
 #    → chrome://extensions → Enable Developer Mode → Load unpacked → select project root
 
-# 4. Build for store
+# 4. Build zip for store
 npm run build:chrome
 ```
 
@@ -44,7 +43,7 @@ npm run build:chrome
 ├── .github/
 │   ├── workflows/
 │   │   ├── ci.yml                 # Validate manifest, lint, test
-│   │   └── cd.yml                 # Auto-deploy to Chrome Web Store
+│   │   └── cd.yml                 # Deploy to Chrome Web Store
 │   └── PULL_REQUEST_TEMPLATE.md
 ├── docs/
 │   └── OAUTH_SETUP.md            # Step-by-step CWS OAuth guide
@@ -55,9 +54,9 @@ npm run build:chrome
 
 - **Manifest V3** — Chrome's current standard, ready for store submission
 - **CI Pipeline** — Validates manifest JSON, lints JS, runs tests on every PR
-- **CD Pipeline** — Auto-builds zip and publishes to Chrome Web Store on push to main
-- **Minimal starter code** — Popup + background + content script, nothing extra
-- **OAuth setup guide** — Step-by-step guide with screenshots for CWS API credentials
+- **CD Pipeline** — One-click deploy to Chrome Web Store via GitHub Actions
+- **Minimal starter code** — Popup with toggle + background + content script
+- **OAuth setup guide** — Step-by-step guide for CWS API credentials
 
 ## CI/CD
 
@@ -66,10 +65,10 @@ npm run build:chrome
 | Step | What it does |
 |------|-------------|
 | Validate manifest | Checks `manifest.json` is valid JSON |
-| Lint | ESLint with browser/webextensions env |
+| Lint | ESLint with browser/webextensions globals |
 | Test | Jest (passes with no tests by default) |
 
-### CD (push to main, only when code changes)
+### CD (manual trigger via Actions tab)
 
 | Step | What it does |
 |------|-------------|
@@ -77,9 +76,13 @@ npm run build:chrome
 | Upload | Publishes to Chrome Web Store via API |
 | Artifact | Saves zip as GitHub Actions artifact |
 
-Triggers only when `manifest.json`, `src/**`, or `assets/**` change.
+**How to deploy:**
 
-### Required GitHub Secrets for CD
+1. Set up GitHub Secrets (see below)
+2. Go to **Actions** tab → **Deploy to Chrome Web Store** → **Run workflow**
+3. Choose publish target (`default` or `trustedTesters`) → **Run**
+
+### Required GitHub Secrets
 
 | Secret | Description |
 |--------|-------------|
@@ -99,17 +102,6 @@ See **[docs/OAUTH_SETUP.md](docs/OAUTH_SETUP.md)** for a detailed setup guide.
 5. Add page injection in `src/content/`
 
 > **Note:** The default content script matches `https://*/*` and `http://*/*`. If your extension only needs specific sites, narrow the `matches` in `manifest.json` to minimize permissions — Chrome Web Store review is stricter with broad host permissions.
-
-## Part of Starter Series
-
-This repo is part of [starter-series](https://github.com/starter-series) — a collection of modern dev starters with CI/CD included.
-
-| Repo | Description | Status |
-|------|-------------|--------|
-| **browser-extension-starter** | MV3 + CWS auto-deploy | Available |
-| nextjs-oauth-starter | Next.js + OAuth (Google/GitHub/Kakao) | Planned |
-| docker-k8s-starter | Docker + Kubernetes deploy pipeline | Planned |
-| nextjs-saas-starter | Full-stack SaaS boilerplate | Planned |
 
 ## Contributing
 
