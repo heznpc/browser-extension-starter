@@ -1,0 +1,61 @@
+name: Deploy to Firefox Add-ons
+
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: 'Release channel'
+        required: true
+        default: 'listed'
+        type: choice
+        options:
+          - listed
+          - unlisted
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Extract version
+        id: version
+        run: |
+          VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('manifest.json','utf8')).version)")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Deploying v$VERSION to Firefox Add-ons"
+
+      - name: Check tag doesn't already exist
+        run: |
+          TAG="v${{ steps.version.outputs.version }}-firefox"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "::error::Tag $TAG already exists. Bump the version in manifest.json first."
+            exit 1
+          fi
+
+      - name: Build
+        run: npx web-ext build --source-dir . --artifacts-dir dist --overwrite-dest --filename extension.zip
+
+      - name: Submit to Firefox Add-ons
+        env:
+          CHANNEL: ${{ inputs.channel }}
+          AMO_API_KEY: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_API_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: npx web-ext sign --source-dir . --channel "$CHANNEL" --api-key "$AMO_API_KEY" --api-secret "$AMO_API_SECRET"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firefox-v${{ steps.version.outputs.version }}
+          path: dist/extension.zip

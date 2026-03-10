@@ -12,11 +12,19 @@ on:
           - default
           - trustedTesters
 
+permissions:
+  contents: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
 
       - name: Extract version
         id: version
@@ -24,6 +32,13 @@ jobs:
           VERSION=$(node -e "console.log(JSON.parse(require('fs').readFileSync('manifest.json','utf8')).version)")
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Deploying v$VERSION"
+
+      - name: Check tag doesn't already exist
+        run: |
+          if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
+            echo "::error::Tag v${{ steps.version.outputs.version }} already exists. Bump the version in manifest.json first."
+            exit 1
+          fi
 
       - name: Build zip
         run: npm run build:chrome
@@ -38,6 +53,20 @@ jobs:
           refresh-token: ${{ secrets.CWS_REFRESH_TOKEN }}
           publish: true
           publish-target: ${{ inputs.publish_target }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
+          body: |
+            ## Chrome Web Store Deployment
+
+            - **Version:** ${{ steps.version.outputs.version }}
+            - **Publish target:** ${{ inputs.publish_target }}
+            - **Deployed by:** @${{ github.actor }}
+          files: dist/extension.zip
+          generate_release_notes: true
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
