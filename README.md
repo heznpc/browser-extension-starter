@@ -10,6 +10,8 @@ Build your extension. Push to deploy.
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest_V3-blue.svg)](https://developer.chrome.com/docs/extensions/)
 
+**English** | [한국어](README.ko.md)
+
 </div>
 
 ---
