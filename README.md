@@ -52,7 +52,8 @@ npm run build:chrome
 │   │   └── setup.yml              # Auto setup checklist on first use
 │   └── PULL_REQUEST_TEMPLATE.md
 ├── docs/
-│   ├── OAUTH_SETUP.md            # CWS OAuth setup guide
+│   ├── CWS_SETUP.md              # Chrome Web Store publishing guide
+│   ├── AMO_SETUP.md              # Firefox Add-ons publishing guide
 │   └── PRIVACY_POLICY_TEMPLATE.md # Privacy policy template for store
 └── package.json
 ```
@@ -110,7 +111,7 @@ npm run build:chrome
 | `CWS_CLIENT_SECRET` | Google OAuth2 client secret |
 | `CWS_REFRESH_TOKEN` | Google OAuth2 refresh token |
 
-See **[docs/OAUTH_SETUP.md](docs/OAUTH_SETUP.md)** for a detailed setup guide.
+See **[docs/CWS_SETUP.md](docs/CWS_SETUP.md)** for a detailed setup guide.
 
 #### Firefox Add-ons (`cd-firefox.yml`)
 
@@ -119,7 +120,7 @@ See **[docs/OAUTH_SETUP.md](docs/OAUTH_SETUP.md)** for a detailed setup guide.
 | `AMO_JWT_ISSUER` | AMO API key (JWT issuer) |
 | `AMO_JWT_SECRET` | AMO API secret |
 
-Get your keys at [addons.mozilla.org/developers/addon/api/key](https://addons.mozilla.org/en-US/developers/addon/api/key/).
+See **[docs/AMO_SETUP.md](docs/AMO_SETUP.md)** for a detailed setup guide.
 
 ## Development
 

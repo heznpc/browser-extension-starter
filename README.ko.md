@@ -52,7 +52,8 @@ npm run build:chrome
 │   │   └── setup.yml              # 첫 사용 시 자동 설정 체크리스트
 │   └── PULL_REQUEST_TEMPLATE.md
 ├── docs/
-│   ├── OAUTH_SETUP.md            # CWS OAuth 설정 가이드
+│   ├── CWS_SETUP.md              # Chrome Web Store 퍼블리싱 가이드
+│   ├── AMO_SETUP.md              # Firefox Add-ons 퍼블리싱 가이드
 │   └── PRIVACY_POLICY_TEMPLATE.md # 스토어 제출용 개인정보처리방침
 └── package.json
 ```
@@ -110,7 +111,7 @@ npm run build:chrome
 | `CWS_CLIENT_SECRET` | Google OAuth2 클라이언트 시크릿 |
 | `CWS_REFRESH_TOKEN` | Google OAuth2 리프레시 토큰 |
 
-자세한 설정 방법은 **[docs/OAUTH_SETUP.md](docs/OAUTH_SETUP.md)**를 참고하세요.
+자세한 설정 방법은 **[docs/CWS_SETUP.md](docs/CWS_SETUP.md)**를 참고하세요.
 
 #### Firefox Add-ons (`cd-firefox.yml`)
 
@@ -119,7 +120,7 @@ npm run build:chrome
 | `AMO_JWT_ISSUER` | AMO API 키 (JWT issuer) |
 | `AMO_JWT_SECRET` | AMO API 시크릿 |
 
-API 키 발급: [addons.mozilla.org/developers/addon/api/key](https://addons.mozilla.org/en-US/developers/addon/api/key/)
+자세한 설정 방법은 **[docs/AMO_SETUP.md](docs/AMO_SETUP.md)**를 참고하세요.
 
 ## 개발
 
