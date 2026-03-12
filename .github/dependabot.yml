@@ -5,8 +5,17 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
+    groups:
+      lint:
+        patterns: ["eslint", "@eslint/*", "globals"]
+      test:
+        patterns: ["jest", "@jest/*"]
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      actions:
+        patterns: ["*"]
