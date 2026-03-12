@@ -12,11 +12,19 @@ on:
           - default
           - trustedTesters
 
+concurrency:
+  group: deploy-chrome
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
 jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
   deploy:
+    needs: ci
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +45,18 @@ jobs:
         run: |
           if git rev-parse "v${{ steps.version.outputs.version }}" >/dev/null 2>&1; then
             echo "::error::Tag v${{ steps.version.outputs.version }} already exists. Bump the version in manifest.json first."
+            exit 1
+          fi
+
+      - name: Validate secrets
+        run: |
+          MISSING=""
+          if [ -z "${{ secrets.CWS_EXTENSION_ID }}" ]; then MISSING="$MISSING CWS_EXTENSION_ID"; fi
+          if [ -z "${{ secrets.CWS_CLIENT_ID }}" ]; then MISSING="$MISSING CWS_CLIENT_ID"; fi
+          if [ -z "${{ secrets.CWS_CLIENT_SECRET }}" ]; then MISSING="$MISSING CWS_CLIENT_SECRET"; fi
+          if [ -z "${{ secrets.CWS_REFRESH_TOKEN }}" ]; then MISSING="$MISSING CWS_REFRESH_TOKEN"; fi
+          if [ -n "$MISSING" ]; then
+            echo "::error::Missing required secrets:$MISSING — See docs/CWS_SETUP.md"
             exit 1
           fi
 
@@ -73,3 +93,4 @@ jobs:
         with:
           name: extension-v${{ steps.version.outputs.version }}
           path: dist/extension.zip
+          retention-days: 30

@@ -12,11 +12,19 @@ on:
           - listed
           - unlisted
 
+concurrency:
+  group: deploy-firefox
+  cancel-in-progress: false
+
 permissions:
   contents: read
 
 jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
   deploy:
+    needs: ci
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -44,6 +52,16 @@ jobs:
             exit 1
           fi
 
+      - name: Validate secrets
+        run: |
+          MISSING=""
+          if [ -z "${{ secrets.AMO_JWT_ISSUER }}" ]; then MISSING="$MISSING AMO_JWT_ISSUER"; fi
+          if [ -z "${{ secrets.AMO_JWT_SECRET }}" ]; then MISSING="$MISSING AMO_JWT_SECRET"; fi
+          if [ -n "$MISSING" ]; then
+            echo "::error::Missing required secrets:$MISSING — See docs/AMO_SETUP.md"
+            exit 1
+          fi
+
       - name: Build
         run: npx web-ext build --source-dir . --artifacts-dir dist --overwrite-dest --filename extension.zip
 
@@ -59,3 +77,4 @@ jobs:
         with:
           name: firefox-v${{ steps.version.outputs.version }}
           path: dist/extension.zip
+          retention-days: 30

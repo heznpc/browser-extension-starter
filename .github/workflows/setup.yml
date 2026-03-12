@@ -1,0 +1,57 @@
+name: Template Setup
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  setup:
+    if: github.run_number == 1
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check if template
+        id: check
+        run: |
+          NAME=$(node -e "console.log(JSON.parse(require('fs').readFileSync('manifest.json','utf8')).name)")
+          if [ "$NAME" = "My Extension" ]; then
+            echo "is_template=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_template=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create setup checklist
+        if: steps.check.outputs.is_template == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "Setup: Configure your browser extension" \
+            --body "$(cat <<'EOF'
+          Welcome! You've created a new project from **browser-extension-starter**.
+
+          ## Required
+          - [ ] Update `manifest.json` — change `name`, `description`
+          - [ ] Replace icons in `icons/` (16, 48, 128 px)
+          - [ ] Update popup HTML/CSS/JS in `popup/`
+
+          ## Chrome Web Store
+          Follow [docs/CWS_SETUP.md](docs/CWS_SETUP.md) to:
+          - [ ] Add secret: `CWS_EXTENSION_ID`
+          - [ ] Add secret: `CWS_CLIENT_ID`
+          - [ ] Add secret: `CWS_CLIENT_SECRET`
+          - [ ] Add secret: `CWS_REFRESH_TOKEN`
+
+          ## Firefox Add-ons
+          Follow [docs/AMO_SETUP.md](docs/AMO_SETUP.md) to:
+          - [ ] Add secret: `AMO_JWT_ISSUER`
+          - [ ] Add secret: `AMO_JWT_SECRET`
+
+          ## Recommended
+          - [ ] Write tests in `tests/`
+          - [ ] Delete this issue when done
+          EOF
+          )"
